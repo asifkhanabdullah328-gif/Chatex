@@ -1,69 +1,35 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>Chat Bot</title>
-  <style>
-    body {
-      font-family: Arial;
-      background: #f2f2f2;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    .chatbox {
-      width: 300px;
-      background: white;
-      padding: 10px;
-      border-radius: 10px;
-    }
-    #messages {
-      height: 200px;
-      overflow-y: auto;
-      border: 1px solid #ccc;
-      padding: 5px;
-      margin-bottom: 5px;
-    }
-    input {
-      width: 75%;
-      padding: 5px;
-    }
-    button {
-      width: 20%;
-      padding: 5px;
-    }
-  </style>
-</head>
-<body>
-
-<div class="chatbox">
-  <h3>My Chat Bot 🤖</h3>
-  <div id="messages"></div>
-  <input id="userInput" placeholder="Type message..." />
-  <button onclick="sendMessage()">Send</button>
-</div>
-
 <script>
 function sendMessage() {
   let input = document.getElementById("userInput");
-  let msg = input.value.toLowerCase();
+  let msg = input.value.toLowerCase().trim();
   let messages = document.getElementById("messages");
 
   if (msg === "") return;
 
   messages.innerHTML += "<p><b>You:</b> " + msg + "</p>";
 
-  let reply = "I don't understand 😕";
+  let reply = "";
 
-  if (msg === "hi") reply = "Hello! 😊";
-  if (msg === "hello") reply = "Hi there 👋";
-  if (msg === "bye") reply = "Allah Hafiz 👋";
+  if (msg.includes("hi") || msg.includes("hello")) {
+    reply = "Hello 👋 Main Chat Bot hoon";
+  }
+  else if (msg.includes("name")) {
+    reply = "Mera naam Chatex Bot hai 🤖";
+  }
+  else if (msg.includes("who made you") || msg.includes("owner")) {
+    reply = "Mujhe Asif Khan ne banaya hai 💻";
+  }
+  else if (msg.includes("help")) {
+    reply = "Aap mujh se sawal pooch sakte ho 😊";
+  }
+  else if (msg.includes("bye")) {
+    reply = "Allah Hafiz 👋 Phir milain ge";
+  }
+  else {
+    reply = "Sorry 😕 is sawal ka jawab mere paas nahi";
+  }
 
   messages.innerHTML += "<p><b>Bot:</b> " + reply + "</p>";
   input.value = "";
 }
 </script>
-
-</body>
-</html>
