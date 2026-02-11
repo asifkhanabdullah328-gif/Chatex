@@ -1,37 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ChatEx Bot</title>
+<style>
+body { font-family: Arial; background:#f4f4f4; }
+#chatbox { width:300px; margin:40px auto; background:#fff; padding:10px; border-radius:8px; }
+#messages { height:300px; overflow-y:auto; border:1px solid #ccc; padding:5px; margin-bottom:8px; }
+input { width:75%; padding:6px; }
+button { padding:6px; }
+</style>
+</head>
+<body>
+
+<div id="chatbox">
+  <div id="messages"></div>
+  <input id="userInput" type="text" placeholder="Type here..." />
+  <button onclick="sendMessage()">Send</button>
+</div>
+
 <script>
 function sendMessage() {
   const input = document.getElementById("userInput");
-  const message = input.value.toLowerCase().trim();
-  const messagesDiv = document.getElementById("messages");
+  const msg = input.value.trim().toLowerCase();
+  const messages = document.getElementById("messages");
 
-  if (message === "") return;
+  if (msg === "") return;
 
-  messagesDiv.innerHTML += `<div><b>You:</b> ${input.value}</div>`;
+  messages.innerHTML += `<div><b>You:</b> ${input.value}</div>`;
 
-  let reply = "Sorry, mujhe is sawal ka jawab nahi pata 😐";
+  let reply = "Samajh nahi aaya 🤔, simple sawal poochho.";
 
-  if (message.includes("hello") || message.includes("hi")) {
-    reply = "Hello 👋 Main ek simple chatbot hoon. Aap kya poochna chahte hain?";
-  } 
-  else if (message.includes("name")) {
-    reply = "Mera naam ChatEx Bot hai 🤖";
+  if (msg.includes("hi") || msg.includes("hello")) {
+    reply = "Hello 👋 main simple chatbot hoon.";
   }
-  else if (message.includes("kya") || message.includes("what")) {
-    reply = "Aap apna sawal thora clear likhein 🙂";
+  else if (msg.includes("kya kar sakte ho")) {
+    reply = "Main simple sawalon ke jawab de sakta hoon 🙂";
   }
-  else if (message.includes("tum kia kar sakte ho")) {
-    reply = "Main simple sawalon ke jawab de sakta hoon 📘";
+  else if (msg.includes("help")) {
+    reply = "Aap mujh se koi bhi sawal pooch sakte ho 👍";
   }
-  else if (message.includes("bye")) {
+  else if (msg.includes("bye")) {
     reply = "Allah Hafiz 👋 phir milenge";
   }
 
-  setTimeout(() => {
-    messagesDiv.innerHTML += `<div><b>Bot:</b> ${reply}</div>`;
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-  }, 500);
-
+  messages.innerHTML += `<div><b>Bot:</b> ${reply}</div>`;
   input.value = "";
 }
 </script>
-input.value = "";
+
+</body>
+</html>
