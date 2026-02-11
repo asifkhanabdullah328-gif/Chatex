@@ -1,38 +1,36 @@
 <script>
 function sendMessage() {
-  let input = document.getElementById("userInput");
-  let msg = input.value.toLowerCase().trim();
-  let messages = document.getElementById("messages");
+  const input = document.getElementById("userInput");
+  const message = input.value.toLowerCase().trim();
+  const messagesDiv = document.getElementById("messages");
 
-  if (msg === "") return;
+  if (message === "") return;
 
-  messages.innerHTML += "<p><b>You:</b> " + msg + "</p>";
+  messagesDiv.innerHTML += `<div><b>You:</b> ${input.value}</div>`;
 
-  let reply = "";
+  let reply = "Sorry, mujhe is sawal ka jawab nahi pata 😐";
 
-  if (msg.includes("hi") || msg.includes("hello")) {
-    reply = "Hello 👋 Main Chat Bot hoon";
+  if (message.includes("hello") || message.includes("hi")) {
+    reply = "Hello 👋 Main ek simple chatbot hoon. Aap kya poochna chahte hain?";
+  } 
+  else if (message.includes("name")) {
+    reply = "Mera naam ChatEx Bot hai 🤖";
   }
-  else if (msg.includes("name")) {
-    reply = "Mera naam Chatex Bot hai 🤖";
+  else if (message.includes("kya") || message.includes("what")) {
+    reply = "Aap apna sawal thora clear likhein 🙂";
   }
-  else if (msg.includes("who made you") || msg.includes("owner")) {
-    reply = "else if (msg.includes("who made you") || msg.includes("owner")) {
-  reply = "Main ek simple chat bot hoon jo sawalon ka jawab deta hoon 🤖";
-}
-
+  else if (message.includes("tum kia kar sakte ho")) {
+    reply = "Main simple sawalon ke jawab de sakta hoon 📘";
   }
-  else if (msg.includes("help")) {
-    reply = "Aap mujh se sawal pooch sakte ho 😊";
-  }
-  else if (msg.includes("bye")) {
-    reply = "Allah Hafiz 👋 Phir milain ge";
-  }
-  else {
-    reply = "Sorry 😕 is sawal ka jawab mere paas nahi";
+  else if (message.includes("bye")) {
+    reply = "Allah Hafiz 👋 phir milenge";
   }
 
-  messages.innerHTML += "<p><b>Bot:</b> " + reply + "</p>";
+  setTimeout(() => {
+    messagesDiv.innerHTML += `<div><b>Bot:</b> ${reply}</div>`;
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  }, 500);
+
   input.value = "";
 }
 </script>
