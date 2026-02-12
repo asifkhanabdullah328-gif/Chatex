@@ -1,291 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modern Chatbot</title>
-    <style>
-        /* Reset and base styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            height: 100vh;
-            overflow: hidden;
-            position: relative;
-        }
+<meta charset="UTF-8">
+<title>ChatEx Smart Bot</title>
 
-        /* Floating bubbles background animation */
-        .bubble {
-            position: absolute;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            animation: float 6s ease-in-out infinite;
-        }
-        .bubble:nth-child(1) { width: 40px; height: 40px; left: 10%; animation-delay: 0s; }
-        .bubble:nth-child(2) { width: 60px; height: 60px; left: 20%; animation-delay: 2s; }
-        .bubble:nth-child(3) { width: 30px; height: 30px; left: 70%; animation-delay: 4s; }
-        .bubble:nth-child(4) { width: 50px; height: 50px; left: 40%; animation-delay: 1s; }
-        .bubble:nth-child(5) { width: 35px; height: 35px; left: 80%; animation-delay: 3s; }
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-        }
+<style>
+body{
+  font-family: Arial, sans-serif;
+  background:#eee;
+}
+.chatbox{
+  width:330px;
+  margin:40px auto;
+  background:white;
+  border-radius:10px;
+  padding:10px;
+}
+#messages{
+  height:300px;
+  overflow-y:auto;
+  border:1px solid #ccc;
+  padding:8px;
+}
+.msg{ margin:6px 0; }
+.you{ color:black; }
+.bot{ color:green; }
 
-        /* Chat icon */
-        .chat-icon {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 60px;
-            height: 60px;
-            background: #007bff;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            z-index: 1000;
-        }
-        .chat-icon:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
-        }
-        .chat-icon::before {
-            content: '💬';
-            font-size: 24px;
-        }
+.typing{
+  color:gray;
+  font-style:italic;
+  animation: blink 1s infinite;
+}
+@keyframes blink{
+  0%{opacity:.2}
+  50%{opacity:1}
+  100%{opacity:.2}
+}
 
-        /* Chat popup */
-        .chat-popup {
-            position: fixed;
-            bottom: 90px;
-            right: 20px;
-            width: 350px;
-            height: 500px;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            display: none;
-            flex-direction: column;
-            overflow: hidden;
-            z-index: 1000;
-            transform: scale(0);
-            transition: transform 0.3s ease;
-        }
-        .chat-popup.open {
-            display: flex;
-            transform: scale(1);
-        }
-
-        /* Header */
-        .chat-header {
-            background: #007bff;
-            color: white;
-            padding: 15px;
-            text-align: center;
-            font-weight: bold;
-            border-radius: 20px 20px 0 0;
-        }
-
-        /* Messages area */
-        .chat-messages {
-            flex: 1;
-            padding: 15px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .message {
-            max-width: 70%;
-            padding: 10px 15px;
-            border-radius: 18px;
-            font-size: 14px;
-            line-height: 1.4;
-            position: relative;
-        }
-        .message.user {
-            align-self: flex-end;
-            background: #007bff;
-            color: white;
-        }
-        .message.bot {
-            align-self: flex-start;
-            background: #f1f1f1;
-            color: #333;
-        }
-        .message.timestamp {
-            font-size: 10px;
-            color: #999;
-            margin-top: 5px;
-        }
-
-        /* Typing indicator */
-        .typing-indicator {
-            display: none;
-            align-self: flex-start;
-            padding: 10px 15px;
-            background: #f1f1f1;
-            border-radius: 18px;
-            font-size: 14px;
-        }
-        .typing-indicator .dots {
-            display: inline-block;
-        }
-        .typing-indicator .dots::after {
-            content: '';
-            animation: typing 1.5s infinite;
-        }
-        @keyframes typing {
-            0%, 20% { content: '.'; }
-            40% { content: '..'; }
-            60%, 100% { content: '...'; }
-        }
-
-        /* Input area */
-        .chat-input {
-            display: flex;
-            padding: 15px;
-            border-top: 1px solid #eee;
-        }
-        .chat-input input {
-            flex: 1;
-            padding: 10px 15px;
-            border: 1px solid #ddd;
-            border-radius: 25px;
-            outline: none;
-            transition: border-color 0.3s ease;
-        }
-        .chat-input input:focus {
-            border-color: #007bff;
-        }
-        .chat-input button {
-            margin-left: 10px;
-            padding: 10px 20px;
-            background: #007bff;
-            color: white;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: background 0.3s ease, transform 0.2s ease;
-        }
-        .chat-input button:hover {
-            background: #0056b3;
-            transform: scale(1.05);
-        }
-
-        /* Mobile responsiveness */
-        @media (max-width: 768px) {
-            .chat-popup {
-                width: 90vw;
-                height: 70vh;
-                bottom: 80px;
-                right: 5vw;
-            }
-            .chat-icon {
-                width: 50px;
-                height: 50px;
-            }
-        }
-    </style>
+input{
+  width:72%;
+  padding:6px;
+}
+button{
+  padding:6px 10px;
+}
+</style>
 </head>
+
 <body>
-    <!-- Floating bubbles -->
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
 
-    <!-- Chat icon -->
-    <div class="chat-icon" id="chatIcon"></div>
+<div class="chatbox">
+  <div id="messages"></div>
+  <input id="userInput" placeholder="Type here..." />
+  <button onclick="send()">Send</button>
+</div>
 
-    <!-- Chat popup -->
-    <div class="chat-popup" id="chatPopup">
-        <div class="chat-header">Chatbot Assistant</div>
-        <div class="chat-messages" id="chatMessages">
-            <div class="message bot">Hello! How can I help you today?<div class="timestamp" id="initialTimestamp"></div></div>
-        </div>
-        <div class="typing-indicator" id="typingIndicator">
-            <span class="dots"></span>
-        </div>
-        <div class="chat-input">
-            <input type="text" id="messageInput" placeholder="Type a message..." />
-            <button id="sendButton">Send</button>
-        </div>
-    </div>
+<script>
+let userName = "";
 
-    <script>
-        // DOM elements
-        const chatIcon = document.getElementById('chatIcon');
-        const chatPopup = document.getElementById('chatPopup');
-        const chatMessages = document.getElementById('chatMessages');
-        const messageInput = document.getElementById('messageInput');
-        const sendButton = document.getElementById('sendButton');
-        const typingIndicator = document.getElementById('typingIndicator');
+function botSay(text){
+  let box=document.getElementById("messages");
 
-        // Initial timestamp
-        document.getElementById('initialTimestamp').textContent = new Date().toLocaleTimeString();
+  let typing=document.createElement("div");
+  typing.className="typing";
+  typing.innerText="Bot is typing...";
+  box.appendChild(typing);
+  box.scrollTop=box.scrollHeight;
 
-        // Toggle chat popup
-        chatIcon.addEventListener('click', () => {
-            chatPopup.classList.toggle('open');
-        });
+  setTimeout(()=>{
+    typing.remove();
+    box.innerHTML+=`<div class="msg bot"><b>Bot:</b> ${text}</div>`;
+    box.scrollTop=box.scrollHeight;
+  },1000);
+}
 
-        // Send message function
-        async function sendMessage() {
-            const message = messageInput.value.trim();
-            if (!message) return;
+function send(){
+  let input=document.getElementById("userInput");
+  let msg=input.value.trim().toLowerCase();
+  if(msg==="") return;
 
-            // Add user message
-            addMessage(message, 'user');
-            messageInput.value = '';
-            playSound(); // Optional sound
+  let box=document.getElementById("messages");
+  box.innerHTML+=`<div class="msg you"><b>You:</b> ${input.value}</div>`;
+  input.value="";
+  box.scrollTop=box.scrollHeight;
 
-            // Show typing indicator
-            typingIndicator.style.display = 'block';
-            scrollToBottom();
+  // NAME UNDERSTANDING
+  if(msg.includes("mera naam")){
+    userName = msg.replace("mera naam","").replace("hai","").trim();
+    botSay("Nice to meet you 😊 " + userName);
+  }
+  else if(msg.includes("hello")||msg.includes("hi")){
+    botSay("Hello 👋 main ChatEx hoon. Tum kya poochna chahte ho?");
+  }
+  else if(msg.includes("tum kon ho")){
+    botSay("Main ek smart chatbot hoon 🤖");
+  }
+  else if(msg.includes("kesy ho")||msg.includes("kaise ho")){
+    botSay("Main bilkul theek hoon 😄");
+  }
+  else if(msg.includes("mera naam")){
+    botSay("Tumhara naam " + userName + " hai 😊");
+  }
+  else if(msg.includes("kia kar sakte")){
+    botSay("Main sawalon ke jawab aur help kar sakta hoon 💡");
+  }
+  else if(msg.includes("bye")){
+    botSay("Allah Hafiz 👋");
+  }
+  else{
+    botSay("Main samajhne ki koshish kar raha hoon 🤔 thora simple likho");
+  }
+}
+</script>
 
-            try {
-                // Send to backend
-                const response = await fetch('http://localhost:5000/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message })
-                });
-                const data = await response.json();
-
-                // Hide typing, add bot message
-                typingIndicator.style.display = 'none';
-                addMessage(data.reply, 'bot');
-                playSound(); // Optional sound
-            } catch (error) {
-                typingIndicator.style.display = 'none';
-                addMessage('Sorry, I\'m having trouble connecting. Please try again.', 'bot');
-            }
-        }
-
-        // Add message to chat
-        function addMessage(text, type) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${type}`;
-            messageDiv.innerHTML = `${text}<div class="timestamp">${new Date().toLocaleTimeString()}</div>`;
-            chatMessages.appendChild(messageDiv);
-            scrollToBottom();
-        }
-
-        // Scroll to bottom
-        function scrollToBottom() {
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-
-        // Optional sound effect
-        function playSound() {
-            const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMfCsFJHLG8N2QQAoUXrTp66hVFApGn+DyvmQdBzaQ1fLMf
+</body>
+</html>
