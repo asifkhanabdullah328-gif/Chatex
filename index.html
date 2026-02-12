@@ -1,53 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>ChatEx Bot</title>
-<style>
-body { font-family: Arial; background:#f4f4f4; }
-#chatbox { width:300px; margin:40px auto; background:#fff; padding:10px; border-radius:8px; }
-#messages { height:300px; overflow-y:auto; border:1px solid #ccc; padding:5px; margin-bottom:8px; }
-input { width:75%; padding:6px; }
-button { padding:6px; }
-</style>
-</head>
-<body>
+const express = require("express");
+const cors = require("cors");
+const fetch = require("node-fetch");
 
-<div id="chatbox">
-  <div id="messages"></div>
-  <input id="userInput" type="text" placeholder="Type here..." />
-  <button onclick="sendMessage()">Send</button>
-</div>
+const app = express();
+app.use(cors());
+app.use(express.json());
 
-<script>
-function sendMessage() {
-  const input = document.getElementById("userInput");
-  const msg = input.value.trim().toLowerCase();
-  const messages = document.getElementById("messages");
+app.post("/chat", async (req, res) => {
+  const userMsg = req.body.message;
 
-  if (msg === "") return;
+  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${process.env.OPENAI_KEY}`
+    },
+    body: JSON.stringify({
+      model: "gpt-3.5-turbo",
+      messages: [{ role: "user", content: userMsg }]
+    })
+  });
 
-  messages.innerHTML += `<div><b>You:</b> ${input.value}</div>`;
+  const data = await response.json();
+  res.json({ reply: data.choices[0].message.content });
+});
 
-  let reply = "Samajh nahi aaya 🤔, simple sawal poochho.";
-
-  if (msg.includes("hi") || msg.includes("hello")) {
-    reply = "Hello 👋 main simple chatbot hoon.";
-  }
-  else if (msg.includes("kya kar sakte ho")) {
-    reply = "Main simple sawalon ke jawab de sakta hoon 🙂";
-  }
-  else if (msg.includes("help")) {
-    reply = "Aap mujh se koi bhi sawal pooch sakte ho 👍";
-  }
-  else if (msg.includes("bye")) {
-    reply = "Allah Hafiz 👋 phir milenge";
-  }
-
-  messages.innerHTML += `<div><b>Bot:</b> ${reply}</div>`;
-  input.value = "";
-}
-</script>
-
-</body>
-</html>
+app.listen(3000, () => console.log("Server running"));
